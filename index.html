@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>LuxeChance</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
+  body {
+    background: #fff0f6;
+    margin: 0;
+    font-family: 'Great Vibes', cursive;
+    color: #8B004B;
+  }
+  header { text-align: center; font-size: 3rem; margin: 1rem 0 2rem; }
+  .slideshow-container { max-width: 500px; margin: 0 auto 1rem; position: relative; overflow: hidden; border-radius: 10px; }
+  .slides { display: flex; width: 200%; transition: transform 0.4s ease; }
+  .slides img { width: 50%; user-select: none; pointer-events: none; border-radius: 10px; }
+  .arrow { cursor: pointer; position: absolute; top: 50%; font-size: 2rem; padding: 0 12px; color: #8B004B; user-select: none; transform: translateY(-50%); background: rgba(255 255 255 / 0.7); border-radius: 50%; z-index: 10; }
+  .arrow:hover { background: #8B004B; color: #fff; }
+  .prev { left: 10px; }
+  .next { right: 10px; }
+  .item-name { text-align: center; font-size: 2rem; margin: 1rem 0 0.5rem; }
+  .price { font-family: Arial, sans-serif; font-size: 1.6rem; text-align: center; color: #8B004B; background: #f9d7e0; width: 90px; margin: 0.5rem auto 1.5rem; border-radius: 25px; padding: 6px 0; font-weight: bold; }
+  .desc { max-width: 460px; margin: 0 auto 2rem; font-size: 1.2rem; line-height: 1.5; }
+  button.buy-btn { display: block; margin: 0 auto 1.5rem; font-family: 'Great Vibes', cursive; font-size: 2rem; background: #8B004B; color: #fff; border: none; border-radius: 25px; padding: 10px 45px; cursor: pointer; box-shadow: 0 4px 6px rgba(139,0,75,0.4); transition: background 0.3s ease; }
+  button.buy-btn:hover { background: #b8327d; }
+  .refund-section { max-width: 460px; margin: 0 auto 3rem; font-size: 1.2rem; text-align: center; }
+  button.refund-btn { font-family: 'Great Vibes', cursive; font-size: 1.6rem; background: none; border: none; color: #8B004B; cursor: pointer; text-decoration: underline; padding: 0; }
+  .refund-text { margin-top: 0.8rem; font-family: 'Great Vibes', cursive; display: none; color: #8B004B; max-width: 460px; margin-left: auto; margin-right: auto; }
+  footer { text-align: center; font-family: Arial, sans-serif; font-size: 0.9rem; color: #8B004B; margin: 2rem 0 1rem; }
+</style>
+
+<!-- Stripe.js -->
+<script src="https://js.stripe.com/v3/"></script>
+</head>
+<body>
+
+<header>LuxeChance</header>
+
+<div class="slideshow-container" aria-label="Product images slideshow">
+  <div class="slides" id="slides">
+    <img src="https://i.postimg.cc/hJspVGtj/IMG-2612.jpg" alt="Pink Chanel bag" />
+    <img src="https://i.postimg.cc/DSFr5KDb/IMG-2612.jpg" alt="LuxeChance ticket" />
+  </div>
+  <span class="arrow prev" id="prev" aria-label="Previous image" tabindex="0">&#10094;</span>
+  <span class="arrow next" id="next" aria-label="Next image" tabindex="0">&#10095;</span>
+</div>
+
+<div class="item-name">Pretty in Pink Ticket</div>
+
+<div class="price">£14.00</div>
+
+<div class="desc">
+  A digital LuxeChance ticket, designed to mark your place in this experience. Each ticket represents a curated opportunity and from time to time, I love to surprise a LuxeChance supporter with a timeless piece. This round’s feature? A Chanel classic flap in pink, selected with love. Limited run of only 850 editions and while nothing is ever promised, generosity tends to be remembered.
+</div>
+
+<button class="buy-btn" id="buyBtn">Buy</button>
+
+<div class="refund-section">
+  <button class="refund-btn" id="refundBtn" aria-expanded="false" aria-controls="refundText">Refund Policy</button>
+  <div class="refund-text" id="refundText" role="region" aria-hidden="true">
+    Refunds are accepted within 14 days of purchase. Please contact LuxeChance support with your order details for assistance.
+  </div>
+</div>
+
+<footer>© 2025 LuxeChance all rights reserved</footer>
+
+<script>
+  // Slideshow functionality
+  const slides = document.getElementById('slides');
+  const prev = document.getElementById('prev');
+  const next = document.getElementById('next');
+  let currentIndex = 0;
+  const totalSlides = slides.children.length;
+  function updateSlide() {
+    const slideWidth = slides.children[0].clientWidth;
+    slides.style.transform = `translateX(-${currentIndex * slideWidth}px)`;
+  }
+  prev.addEventListener('click', () => {
+    currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+    updateSlide();
+  });
+  next.addEventListener('click', () => {
+    currentIndex = (currentIndex + 1) % totalSlides;
+    updateSlide();
+  });
+  prev.addEventListener('keydown', e => { if (e.key==='Enter'||e.key===' '){ e.preventDefault(); prev.click(); } });
+  next.addEventListener('keydown', e => { if (e.key==='Enter'||e.key===' '){ e.preventDefault(); next.click(); } });
+
+  // Refund policy toggle
+  const refundBtn = document.getElementById('refundBtn');
+  const refundText = document.getElementById('refundText');
+  refundBtn.addEventListener('click', () => {
+    const isVisible = refundText.style.display === 'block';
+    refundText.style.display = isVisible ? 'none' : 'block';
+    refundText.setAttribute('aria-hidden', isVisible ? 'true' : 'false');
+    refundBtn.setAttribute('aria-expanded', !isVisible);
+  });
+
+  // Stripe Checkout integration
+  const stripe = Stripe("pk_test_YOUR_PUBLISHABLE_KEY"); // <-- replace with your Stripe publishable key
+  const buyBtn = document.getElementById('buyBtn');
+
+  buyBtn.addEventListener('click', async () => {
+    const { error } = await stripe.redirectToCheckout({
+      lineItems: [{ price: "prod_SrUP2lALLYl8WU", quantity: 1 }], // your product ID
+      mode: 'payment',
+      successUrl: window.location.origin + '/success.html', // change if needed
+      cancelUrl: window.location.origin + '/cancel.html',   // change if needed
+    });
+    if (error) {
+      alert(error.message);
+    }
+  });
+
+  window.addEventListener('load', updateSlide);
+  window.addEventListener('resize', updateSlide);
+</script>
+
+</body>
+</html>
