@@ -60,7 +60,7 @@
 <div class="refund-section">
   <button class="refund-btn" id="refundBtn" aria-expanded="false" aria-controls="refundText">Refund Policy</button>
   <div class="refund-text" id="refundText" role="region" aria-hidden="true">
-    Refunds are not accepted this is a digital item all orders are final. 
+    Refunds are not accepted; this is a digital item. All orders are final.
   </div>
 </div>
 
@@ -104,10 +104,10 @@
 
   buyBtn.addEventListener('click', async () => {
     const { error } = await stripe.redirectToCheckout({
-      lineItems: [{ price: "prod_SrUP2lALLYl8WU", quantity: 1 }], // your product ID
+      lineItems: [{ price: "price_XXXXXXXXXXXXXXXX", quantity: 1 }], // <-- replace with your Stripe Price ID
       mode: 'payment',
-      successUrl: window.location.origin + '/success.html', // change if needed
-      cancelUrl: window.location.origin + '/cancel.html',   // change if needed
+      successUrl: window.location.origin + '/success.html',
+      cancelUrl: window.location.origin + '/cancel.html',
     });
     if (error) {
       alert(error.message);
@@ -120,3 +120,4 @@
 
 </body>
 </html>
+ 
