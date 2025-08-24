@@ -104,7 +104,7 @@ For inquiries, please contact via Instagram @LuxeChance__. Do not use the phone 
 
   buyBtn.addEventListener('click', async () => {
     const { error } = await stripe.redirectToCheckout({
-      lineItems: [{ price: "", quantity: 850 }], //
+      lineItems: [{ price: "prod_SvXjJFcks38SUf", quantity: 850 }], //
       mode: 'payment',
       successUrl: window.location.origin + '/success.html',
       cancelUrl: window.location.origin + '/cancel.html',
