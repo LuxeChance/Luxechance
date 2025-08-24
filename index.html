@@ -99,12 +99,12 @@
   });
 
   // Stripe Checkout integration
-  const stripe = Stripe("pk_test_YOUR_PUBLISHABLE_KEY"); // <-- replace with your Stripe publishable key
+  const stripe = Stripe(pk_live_51RvkfOAGrE3GGnsR7CA9q1Z5HuD3gnxw0xxf4yXzl8FOrYkY1HbVwwJBQdfh6LMSX8ZbGZObe0FqPCnPJw0UBvBQ000ABh7Uce); // 
   const buyBtn = document.getElementById('buyBtn');
 
   buyBtn.addEventListener('click', async () => {
     const { error } = await stripe.redirectToCheckout({
-      lineItems: [{ price: "price_XXXXXXXXXXXXXXXX", quantity: 1 }], // <-- replace with your Stripe Price ID
+      lineItems: [{ price: "", quantity: 850 }], //
       mode: 'payment',
       successUrl: window.location.origin + '/success.html',
       cancelUrl: window.location.origin + '/cancel.html',
